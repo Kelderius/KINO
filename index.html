@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Моя коллекция фильмов</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0d1b3a;
+            --secondary-color: #1d3557;
+            --accent-color: #457b9d;
+            --light-color: #a8dadc;
+            --dark-color: #0a1128;
+            --text-color: #f1faee;
+            --bg-color: #0a192f;
+            --card-bg: #172a45;
+            --border-color: #2a4a6e;
+            --success-color: #2a9d8f;
+            --warning-color: #e9c46a;
+            --error-color: #e76f51;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--dark-color), var(--bg-color));
+            background-attachment: fixed;
+            color: var(--text-color);
+            line-height: 1.6;
+            padding-top: 80px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        header h1 {
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-top: 0.8rem;
+            flex-wrap: wrap;
+        }
+        
+        .nav-btn {
+            background-color: rgba(255, 255, 255, 0.12);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .nav-btn:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn.active {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+        
+        .section {
+            display: none;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.5s ease;
+            border: 1px solid var(--border-color);
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section-title {
+            color: var(--light-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--accent-color);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .genres-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .genre-card {
+            background-color: var(--dark-color);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+            transition: transform 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+        
+        .genre-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+        }
+        
+        .genre-header {
+            background: linear-gradient(to right, var(--secondary-color), var(--accent-color));
+            color: white;
+            padding: 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+        
+        .genre-movies {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+        
+        .genre-card.active .genre-movies {
+            max-height: 1000px;
+        }
+        
+        .movie-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .movie-item:hover {
+            background-color: rgba(69, 123, 157, 0.1);
+        }
+        
+        .movie-item:last-child {
+            border-bottom: none;
+        }
+        
+        .movie-poster {
+            width: 60px;
+            height: 90px;
+            border-radius: 5px;
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--light-color);
+            font-size: 0.8rem;
+            text-align: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .movie-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .movie-details {
+            flex: 1;
+        }
+        
+        .movie-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: white;
+        }
+        
+        .movie-rating {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        
+        .movie-rating.not-watched {
+            background-color: var(--border-color);
+            color: var(--light-color);
+        }
+        
+        .movie-year {
+            color: var(--light-color);
+            font-size: 0.9rem;
+        }
+        
+        .movie-comment {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--light-color);
+            font-style: italic;
+        }
+        
+        .sort-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .sort-btn {
+            background-color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            color: var(--light-color);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+        
+        .sort-btn:hover {
+            background-color: var(--accent-color);
+        }
+        
+        .sort-btn.active {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 8px rgba(69, 123, 157, 0.5);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--light-color);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--dark-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            color: white;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(69, 123, 157, 0.25);
+        }
+        
+        .rating-container {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .rating-container input {
+            flex: 1;
+        }
+        
+        .not-watched-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .not-watched-container label {
+            margin: 0;
+            font-weight: normal;
+        }
+        
+        .image-preview {
+            width: 120px;
+            height: 180px;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-top: 0.5rem;
+            background: linear-gradient(135deg, var(--secondary-color), var(--dark-color));
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, var(--accent-color), #3a86ff);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(58, 134, 255, 0.3);
+        }
+        
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .movie-card {
+            background-color: var(--dark-color);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+        
+        .movie-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+        }
+        
+        .movie-card-poster {
+            height: 300px;
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .movie-card-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .movie-card-details {
+            padding: 1.2rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--light-color);
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--border-color);
+        }
+        
+        .empty-state h3 {
+            color: var(--light-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--light-color);
+            background-color: var(--primary-color);
+            margin-top: 3rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .stat-card {
+            background-color: var(--dark-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin: 0.5rem 0;
+        }
+        
+        .stat-label {
+            color: var(--light-color);
+            font-size: 1.1rem;
+        }
+        
+        .genre-list {
+            columns: 3;
+            column-gap: 1.5rem;
+        }
+        
+        .genre-list li {
+            margin-bottom: 0.5rem;
+            break-inside: avoid;
+        }
+        
+        @media (max-width: 900px) {
+            .genre-list {
+                columns: 2;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .genres-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .movies-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            nav {
+                gap: 0.5rem;
+            }
+            
+            .nav-btn {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+            
+            .section {
+                padding: 1.5rem;
+            }
+            
+            .genre-list {
+                columns: 1;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            .nav-btn span {
+                display: none;
+            }
+            
+            .nav-btn i {
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1><i class="fas fa-film"></i> Моя коллекция фильмов</h1>
+            <p>Все фильмы, которые я когда-либо смотрел</p>
+            <nav>
+                <button class="nav-btn active" data-section="genres"><i class="fas fa-theater-masks"></i> <span>Жанры</span></button>
+                <button class="nav-btn" data-section="all-movies"><i class="fas fa-list"></i> <span>Все фильмы</span></button>
+                <button class="nav-btn" data-section="add-movie"><i class="fas fa-plus-circle"></i> <span>Добавить</span></button>
+                <button class="nav-btn" data-section="stats"><i class="fas fa-chart-bar"></i> <span>Статистика</span></button>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- Жанры -->
+        <section id="genres" class="section active">
+            <h2 class="section-title"><i class="fas fa-theater-masks"></i> Фильмы по жанрам</h2>
+            <p>Нажмите на жанр, чтобы увидеть список фильмов</p>
+            
+            <div class="sort-controls">
+                <button class="sort-btn active" data-sort="title-asc">А-Я</button>
+                <button class="sort-btn" data-sort="title-desc">Я-А</button>
+                <button class="sort-btn" data-sort="rating-asc">Рейтинг ↑</button>
+                <button class="sort-btn" data-sort="rating-desc">Рейтинг ↓</button>
+            </div>
+            <div class="genres-container" id="genres-container">
+                <!-- Жанры будут загружены динамически -->
+            </div>
+        </section>
+        
+        <!-- Все фильмы -->
+        <section id="all-movies" class="section">
+            <h2 class="section-title"><i class="fas fa-list"></i> Все фильмы</h2>
+            <div class="sort-controls">
+                <button class="sort-btn active" data-sort="title-asc">А-Я</button>
+                <button class="sort-btn" data-sort="title-desc">Я-А</button>
+                <button class="sort-btn" data-sort="year-asc">Год ↑</button>
+                <button class="sort-btn" data-sort="year-desc">Год ↓</button>
+                <button class="sort-btn" data-sort="rating-asc">Рейтинг ↑</button>
+                <button class="sort-btn" data-sort="rating-desc">Рейтинг ↓</button>
+            </div>
+            <div class="movies-grid" id="all-movies-container">
+                <!-- Все фильмы будут загружены динамически -->
+            </div>
+        </section>
+        
+        <!-- Добавление фильма -->
+        <section id="add-movie" class="section">
+            <h2 class="section-title"><i class="fas fa-plus-circle"></i> Добавить новый фильм</h2>
+            <form id="add-movie-form">
+                <div class="form-group">
+                    <label for="movie-title">Название фильма *</label>
+                    <input type="text" id="movie-title" required placeholder="Введите название фильма">
+                </div>
+                
+                <div class="form-group">
+                    <label for="movie-genre">Жанр *</label>
+                    <select id="movie-genre" required>
+                        <option value="">Выберите жанр</option>
+                        <!-- Жанры будут добавлены динамически -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="movie-year">Год выхода</label>
+                    <input type="number" id="movie-year" min="1900" max="2023" placeholder="Год выхода фильма">
+                </div>
+                
+                <div class="form-group">
+                    <label>Рейтинг</label>
+                    <div class="rating-container">
+                        <input type="number" id="movie-rating" min="0" max="10" step="0.1" placeholder="0-10">
+                        <span>/10</span>
+                    </div>
+                    <div class="not-watched-container">
+                        <input type="checkbox" id="not-watched">
+                        <label for="not-watched">Не смотрел</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="movie-comment">Комментарий</label>
+                    <textarea id="movie-comment" rows="3" placeholder="Ваши впечатления о фильме"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="movie-image">Обложка фильма</label>
+                    <input type="file" id="movie-image" accept="image/*">
+                    <div class="image-preview" id="image-preview">
+                        <i class="fas fa-image" style="font-size: 2rem; color: #94a3b8;"></i>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn"><i class="fas fa-save"></i> Сохранить фильм</button>
+            </form>
+        </section>
+        
+        <!-- Статистика -->
+        <section id="stats" class="section">
+            <h2 class="section-title"><i class="fas fa-chart-bar"></i> Статистика коллекции</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fas fa-film fa-2x"></i>
+                    <div class="stat-value" id="total-movies">0</div>
+                    <div class="stat-label">Всего фильмов</div>
+                </div>
+                
+                <div class="stat-card">
+                    <i class="fas fa-star fa-2x"></i>
+                    <div class="stat-value" id="avg-rating">0.0</div>
+                    <div class="stat-label">Средний рейтинг</div>
+                </div>
+                
+                <div class="stat-card">
+                    <i class="fas fa-eye fa-2x"></i>
+                    <div class="stat-value" id="watched-movies">0</div>
+                    <div class="stat-label">Просмотрено</div>
+                </div>
+                
+                <div class="stat-card">
+                    <i class="fas fa-eye-slash fa-2x"></i>
+                    <div class="stat-value" id="not-watched-movies">0</div>
+                    <div class="stat-label">Не просмотрено</div>
+                </div>
+            </div>
+            
+            <h3 style="margin-top: 2rem; color: var(--light-color);">Фильмы по жанрам:</h3>
+            <ul class="genre-list" id="genre-stats">
+                <!-- Статистика по жанрам будет загружена динамически -->
+            </ul>
+        </section>
+    </div>
+    
+    <footer>
+        <p>Моя коллекция фильмов &copy; 2023 | Все периоды кинематографа</p>
+    </footer>
+    
+    <script>
+        // Список всех жанров
+        const allGenres = [
+            "Мюзикл", "Криминал", "Детективы", "Боевики", "Триллер", "Драма", "Семейный", 
+            "Комедии", "Фантастика", "Приключения", "Мультфильмы", "Биография/Исторический", 
+            "Документалки", "Ужасы", "Кринж", "Фильмы Х"
+        ];
+        
+        // Пример данных (в реальном приложении можно загружать из localStorage)
+        const moviesData = [
+            {
+                id: 1,
+                title: "Суини Тодд, демон-парикмахер с Флит-стрит",
+                genre: "Мюзикл",
+                rating: 10,
+                year: 2007,
+                comment: "Отличный мюзикл с глубоким сюжетом",
+                watched: true,
+                image: null
+            },
+            {
+                id: 2,
+                title: "Ла-Ла Ленд",
+                genre: "Мюзикл",
+                rating: null,
+                year: 2016,
+                comment: "",
+                watched: false,
+                image: null
+            },
+            {
+                id: 3,
+                title: "Джентльмены",
+                genre: "Криминал",
+                rating: 10,
+                year: 2019,
+                comment: "Блестящий криминальный фильм Гая Ричи",
+                watched: true,
+                image: null
+            },
+            {
+                id: 4,
+                title: "Одиннадцать друзей Оушена",
+                genre: "Криминал",
+                rating: 8,
+                year: 2001,
+                comment: "Классика жанра",
+                watched: true,
+                image: null
+            },
+            {
+                id: 5,
+                title: "Леон",
+                genre: "Боевики",
+                rating: 8,
+                year: 1994,
+                comment: "Культовый фильм Люка Бессона",
+                watched: true,
+                image: null
+            },
+            {
+                id: 6,
+                title: "Назад в будущее",
+                genre: "Фантастика",
+                rating: 10,
+                year: 1985,
+                comment: "Вечная классика",
+                watched: true,
+                image: null
+            },
+            {
+                id: 7,
+                title: "Криминальное чтиво",
+                genre: "Криминал",
+                rating: 8,
+                year: 1994,
+                comment: "Культовый фильм Тарантино",
+                watched: true,
+                image: null
+            },
+            {
+                id: 8,
+                title: "Убить Билла 1 часть",
+                genre: "Боевики",
+                rating: 10,
+                year: 2003,
+                comment: "Шедевр боевых искусств",
+                watched: true,
+                image: null
+            },
+            {
+                id: 9,
+                title: "Интерстеллар",
+                genre: "Фантастика",
+                rating: 9,
+                year: 2014,
+                comment: "Визуально потрясающий и глубокий",
+                watched: true,
+                image: null
+            },
+            {
+                id: 10,
+                title: "Король Лев",
+                genre: "Мультфильмы",
+                rating: 8,
+                year: 1994,
+                comment: "Дисней в лучшем проявлении",
+                watched: true,
+                image: null
+            }
+        ];
+        
+        // DOM элементы
+        const navBtns = document.querySelectorAll('.nav-btn');
+        const sections = document.querySelectorAll('.section');
+        const genresContainer = document.getElementById('genres-container');
+        const allMoviesContainer = document.getElementById('all-movies-container');
+        const addMovieForm = document.getElementById('add-movie-form');
+        const imagePreview = document.getElementById('image-preview');
+        const movieImageInput = document.getElementById('movie-image');
+        const notWatchedCheckbox = document.getElementById('not-watched');
+        const movieRatingInput = document.getElementById('movie-rating');
+        const sortBtns = document.querySelectorAll('.sort-btn');
+        const genreSelect = document.getElementById('movie-genre');
+        const totalMoviesEl = document.getElementById('total-movies');
+        const avgRatingEl = document.getElementById('avg-rating');
+        const watchedMoviesEl = document.getElementById('watched-movies');
+        const notWatchedMoviesEl = document.getElementById('not-watched-movies');
+        const genreStatsEl = document.getElementById('genre-stats');
+        
+        // Текущее состояние
+        let currentSort = 'title-asc';
+        let movies = [...moviesData];
+        
+        // Инициализация приложения
+        function init() {
+            // Заполняем выпадающий список жанров
+            allGenres.forEach(genre => {
+                const option = document.createElement('option');
+                option.value = genre;
+                option.textContent = genre;
+                genreSelect.appendChild(option);
+            });
+            
+            // Навигация
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const sectionId = btn.dataset.section;
+                    
+                    // Обновляем активную кнопку
+                    navBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    // Показываем активную секцию
+                    sections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === sectionId) {
+                            section.classList.add('active');
+                            
+                            // Обновляем статистику при переходе на вкладку
+                            if (sectionId === 'stats') {
+                                updateStats();
+                            }
+                        }
+                    });
+                });
+            });
+            
+            // Сортировка
+            sortBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    sortBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentSort = btn.dataset.sort;
+                    
+                    if (document.getElementById('genres').classList.contains('active')) {
+                        renderGenres();
+                    } else {
+                        renderAllMovies();
+                    }
+                });
+            });
+            
+            // Загрузка изображения
+            movieImageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        imagePreview.innerHTML = `<img src="${event.target.result}" alt="Предпросмотр обложки">`;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Обработка "Не смотрел"
+            notWatchedCheckbox.addEventListener('change', function() {
+                movieRatingInput.disabled = this.checked;
+                if (this.checked) {
+                    movieRatingInput.value = '';
+                }
+            });
+            
+            // Добавление фильма
+            addMovieForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const title = document.getElementById('movie-title').value;
+                const genre = document.getElementById('movie-genre').value;
+                const year = document.getElementById('movie-year').value;
+                const rating = notWatchedCheckbox.checked ? null : parseFloat(document.getElementById('movie-rating').value);
+                const comment = document.getElementById('movie-comment').value;
+                const image = imagePreview.querySelector('img') ? imagePreview.querySelector('img').src : null;
+                
+                if (!title || !genre) {
+                    alert('Пожалуйста, заполните обязательные поля: название и жанр');
+                    return;
+                }
+                
+                if (rating !== null && (rating < 0 || rating > 10)) {
+                    alert('Рейтинг должен быть в диапазоне от 0 до 10');
+                    return;
+                }
+                
+                const newMovie = {
+                    id: Date.now(),
+                    title,
+                    genre,
+                    year: year ? parseInt(year) : null,
+                    rating,
+                    comment,
+                    watched: rating !== null,
+                    image
+                };
+                
+                movies.push(newMovie);
+                
+                // Сброс формы
+                addMovieForm.reset();
+                imagePreview.innerHTML = '<i class="fas fa-image" style="font-size: 2rem; color: #94a3b8;"></i>';
+                notWatchedCheckbox.checked = false;
+                movieRatingInput.disabled = false;
+                
+                // Обновление отображения
+                renderGenres();
+                renderAllMovies();
+                
+                // Показываем уведомление
+                alert(`Фильм "${title}" успешно добавлен в коллекцию!`);
+            });
+            
+            // Первоначальная отрисовка
+            renderGenres();
+            renderAllMovies();
+        }
+        
+        // Отрисовка по жанрам
+        function renderGenres() {
+            genresContainer.innerHTML = '';
+            
+            // Группируем фильмы по жанрам
+            const moviesByGenre = {};
+            allGenres.forEach(genre => {
+                moviesByGenre[genre] = [];
+            });
+            
+            movies.forEach(movie => {
+                if (moviesByGenre[movie.genre]) {
+                    moviesByGenre[movie.genre].push(movie);
+                }
+            });
+            
+            // Сортируем фильмы внутри жанров
+            Object.keys(moviesByGenre).forEach(genre => {
+                moviesByGenre[genre] = sortMovies(moviesByGenre[genre], currentSort);
+            });
+            
+            // Отрисовываем каждый жанр
+            Object.keys(moviesByGenre).forEach(genre => {
+                // Пропускаем пустые жанры
+                if (moviesByGenre[genre].length === 0) return;
+                
+                const genreCard = document.createElement('div');
+                genreCard.className = 'genre-card';
+                genreCard.innerHTML = `
+                    <div class="genre-header">
+                        <span>${genre} (${moviesByGenre[genre].length})</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="genre-movies"></div>
+                `;
+                
+                const genreMovies = genreCard.querySelector('.genre-movies');
+                moviesByGenre[genre].forEach(movie => {
+                    const movieElement = createMovieElement(movie);
+                    genreMovies.appendChild(movieElement);
+                });
+                
+                // Переключение видимости
+                const genreHeader = genreCard.querySelector('.genre-header');
+                genreHeader.addEventListener('click', () => {
+                    genreCard.classList.toggle('active');
+                    const icon = genreHeader.querySelector('i');
+                    icon.classList.toggle('fa-chevron-down');
+                    icon.classList.toggle('fa-chevron-up');
+                });
+                
+                genresContainer.appendChild(genreCard);
+            });
+        }
+        
+        // Отрисовка всех фильмов
+        function renderAllMovies() {
+            allMoviesContainer.innerHTML = '';
+            
+            const sortedMovies = sortMovies(movies, currentSort);
+            
+            if (sortedMovies.length === 0) {
+                allMoviesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-film"></i>
+                        <h3>В вашей коллекции пока нет фильмов</h3>
+                        <p>Добавьте первый фильм, нажав на кнопку "Добавить фильм"</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            sortedMovies.forEach(movie => {
+                const movieCard = document.createElement('div');
+                movieCard.className = 'movie-card';
+                
+                movieCard.innerHTML = `
+                    <div class="movie-card-poster">
+                        ${movie.image ? 
+                            `<img src="${movie.image}" alt="${movie.title}">` : 
+                            `<i class="fas fa-film" style="font-size: 3rem; color: #94a3b8;"></i>`
+                        }
+                    </div>
+                    <div class="movie-card-details">
+                        <h3 class="movie-title">${movie.title}</h3>
+                        <div class="movie-year">${movie.year || 'Год неизвестен'}</div>
+                        ${movie.rating !== null ? 
+                            `<div class="movie-rating">${movie.rating}/10</div>` : 
+                            `<div class="movie-rating not-watched">Не смотрел</div>`
+                        }
+                        ${movie.comment ? `<div class="movie-comment">${movie.comment}</div>` : ''}
+                    </div>
+                `;
+                
+                allMoviesContainer.appendChild(movieCard);
+            });
+        }
+        
+        // Создание элемента фильма
+        function createMovieElement(movie) {
+            const movieElement = document.createElement('div');
+            movieElement.className = 'movie-item';
+            
+            movieElement.innerHTML = `
+                <div class="movie-poster">
+                    ${movie.image ? 
+                        `<img src="${movie.image}" alt="${movie.title}">` : 
+                        `<i class="fas fa-film"></i>`
+                    }
+                </div>
+                <div class="movie-details">
+                    <div class="movie-title">${movie.title}</div>
+                    <div class="movie-year">${movie.year || 'Год неизвестен'}</div>
+                    ${movie.rating !== null ? 
+                        `<div class="movie-rating">${movie.rating}/10</div>` : 
+                        `<div class="movie-rating not-watched">Не смотрел</div>`
+                    }
+                    ${movie.comment ? `<div class="movie-comment">${movie.comment}</div>` : ''}
+                </div>
+            `;
+            
+            return movieElement;
+        }
+        
+        // Сортировка фильмов
+        function sortMovies(moviesList, sortType) {
+            return [...moviesList].sort((a, b) => {
+                switch (sortType) {
+                    case 'title-asc':
+                        return a.title.localeCompare(b.title);
+                    case 'title-desc':
+                        return b.title.localeCompare(a.title);
+                    case 'year-asc':
+                        return (a.year || 0) - (b.year || 0);
+                    case 'year-desc':
+                        return (b.year || 0) - (a.year || 0);
+                    case 'rating-asc':
+                        return (a.rating || 0) - (b.rating || 0);
+                    case 'rating-desc':
+                        return (b.rating || 0) - (a.rating || 0);
+                    default:
+                        return a.title.localeCompare(b.title);
+                }
+            });
+        }
+        
+        // Обновление статистики
+        function updateStats() {
+            // Общее количество фильмов
+            totalMoviesEl.textContent = movies.length;
+            
+            // Просмотренные и непросмотренные
+            const watchedMovies = movies.filter(movie => movie.watched).length;
+            const notWatchedMovies = movies.length - watchedMovies;
+            
+            watchedMoviesEl.textContent = watchedMovies;
+            notWatchedMoviesEl.textContent = notWatchedMovies;
+            
+            // Средний рейтинг
+            const ratedMovies = movies.filter(movie => movie.rating !== null);
+            const totalRating = ratedMovies.reduce((sum, movie) => sum + movie.rating, 0);
+            const avgRating = ratedMovies.length > 0 ? (totalRating / ratedMovies.length).toFixed(1) : 0;
+            avgRatingEl.textContent = avgRating;
+            
+            // Статистика по жанрам
+            genreStatsEl.innerHTML = '';
+            
+            // Группируем фильмы по жанрам
+            const moviesByGenre = {};
+            allGenres.forEach(genre => {
+                moviesByGenre[genre] = 0;
+            });
+            
+            movies.forEach(movie => {
+                if (moviesByGenre[movie.genre] !== undefined) {
+                    moviesByGenre[movie.genre]++;
+                }
+            });
+            
+            // Сортируем жанры по количеству фильмов
+            const sortedGenres = Object.entries(moviesByGenre)
+                .filter(([_, count]) => count > 0)
+                .sort((a, b) => b[1] - a[1]);
+            
+            // Отрисовываем статистику по жанрам
+            sortedGenres.forEach(([genre, count]) => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${genre}</strong>: ${count} фильм${count % 10 === 1 && count % 100 !== 11 ? '' : 'ов'}`;
+                genreStatsEl.appendChild(li);
+            });
+        }
+        
+        // Запуск приложения
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
